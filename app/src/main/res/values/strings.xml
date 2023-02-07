@@ -2,4 +2,12 @@
     <string name="app_name">MovieDbApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_movie_tab">MovieTabActivity</string>
+
+    <string-array name="tabs">
+        <item>Now Playing</item>
+        <item>Popular</item>
+        <item>Top Rated</item>
+        <item>Upcoming</item>
+    </string-array>
 </resources>

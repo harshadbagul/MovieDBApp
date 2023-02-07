@@ -67,6 +67,8 @@ dependencies {
 
     //dagger
     implementation("com.google.dagger:hilt-android:${rootProject.ext.hilt_version}")
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     kapt("com.google.dagger:hilt-android-compiler:${rootProject.ext.hilt_version}")
 
     //flow
