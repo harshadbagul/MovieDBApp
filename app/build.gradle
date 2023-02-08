@@ -18,6 +18,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "API_KEY", API_KEY)
     }
 
     buildTypes {
@@ -79,6 +80,8 @@ dependencies {
     implementation "androidx.room:room-runtime:${rootProject.ext.room_version}"
     kapt "androidx.room:room-compiler:${rootProject.ext.room_version}"
     implementation "androidx.room:room-ktx:${rootProject.ext.room_version}"
+
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     //recyclerview
     implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recylerview_version}"

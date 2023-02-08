@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-private const val NUM_TABS = 4
+private const val NUM_TABS = 2
 
 public class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
         FragmentStateAdapter(fragmentManager, lifecycle) {
@@ -18,8 +18,8 @@ public class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifec
         when (position) {
             0 -> return MovieFragment()
             1 -> return MovieFragment()
-            2 -> return MovieFragment()
-            3 -> return MovieFragment()
+            /*2 -> return MovieFragment()
+            3 -> return MovieFragment()*/
         }
         return MovieFragment()
     }
