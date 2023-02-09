@@ -29,7 +29,17 @@ class MovieRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
- private suspend fun getNowPlaying(page:Int): MovieResponse? {
+
+    suspend fun getGenres() {
+        val response = withContext(Dispatchers.IO) {
+            movieService.getGenre(BuildConfig.API_KEY)
+        }
+        response.genres?.let { genres ->
+            movieDatabase.movieDao.insertGenres(genres)
+        }
+    }
+
+    private suspend fun getNowPlaying(page:Int): MovieResponse? {
         return try {
             withContext(Dispatchers.IO) {
                 movieService.getNowPlaying(BuildConfig.API_KEY, page = page)

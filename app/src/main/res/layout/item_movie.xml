@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,17 +29,19 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="@dimen/margin_12" >
+            android:padding="@dimen/margin_8">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textview_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
+                android:textSize="@dimen/margin_16"
                 android:textColor="@color/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -49,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Genere"
                 android:layout_marginTop="@dimen/margin_8"
+                android:textSize="@dimen/margin_12"
                 android:textColor="@color/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textview_title" />
@@ -59,9 +63,53 @@
                 android:layout_height="wrap_content"
                 android:text="Release on 23/01/2023"
                 android:layout_marginTop="@dimen/margin_8"
+                android:textSize="@dimen/margin_12"
                 android:textColor="@color/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textview_genere" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageView_vote"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="@dimen/margin_12"
+                android:src="@drawable/vote"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_release_date" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textview_vote_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="113232"
+                android:layout_marginStart="@dimen/margin_4"
+                android:textColor="@color/grey"
+                android:textSize="@dimen/size_12"
+                app:layout_constraintStart_toEndOf="@+id/imageView_vote"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView_vote"
+                app:layout_constraintTop_toTopOf="@+id/imageView_vote"
+                tools:layout_editor_absoluteX="41dp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageView_vote_avg"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/vote_average"
+                android:layout_marginStart="@dimen/margin_32"
+                app:layout_constraintStart_toEndOf="@+id/textview_vote_count"
+                app:layout_constraintTop_toTopOf="@+id/textview_vote_count" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textview_vote_avg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="113232"
+                android:textColor="@color/grey"
+                android:textSize="@dimen/size_12"
+                android:layout_marginStart="@dimen/margin_4"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView_vote_avg"
+                app:layout_constraintTop_toTopOf="@+id/imageView_vote_avg"
+                app:layout_constraintStart_toEndOf="@+id/imageView_vote_avg" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

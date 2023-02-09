@@ -8,8 +8,11 @@ import retrofit2.http.QueryMap
 
 interface MovieService {
 
-    @GET("now_playing")
+    @GET("movie/now_playing")
     suspend fun getNowPlaying(@Query("api_key") api_key: String,
                                  @Query("page") page: Int): MovieResponse
+
+    @GET("genre/movie/list")
+    suspend fun getGenre(@Query("api_key") api_key: String): MovieResponse
 
 }

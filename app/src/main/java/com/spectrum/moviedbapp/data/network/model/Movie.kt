@@ -11,10 +11,17 @@ data class MovieResponse(
     @SerializedName("page") var page: Int? = null,
     @SerializedName("results") var results: ArrayList<Results> = arrayListOf(),
     @SerializedName("total_pages") var totalPages: Int? = null,
-    @SerializedName("total_results") var totalResults: Int? = null
+    @SerializedName("total_results") var totalResults: Int? = null,
+    @SerializedName("genres") var genres: List<Genres>? = null
 )
 
 @Entity
+data class Genres(
+    @PrimaryKey
+    @SerializedName("id") var id: Int? = null,
+    @SerializedName("name") var name: String? = null
+)
+
 data class Results(
     @PrimaryKey
     @SerializedName("id") var id: Int? = null,
@@ -33,10 +40,11 @@ data class Results(
     @SerializedName("title") var title: String? = null,
     @SerializedName("video") var video: Boolean? = null,
     @SerializedName("vote_average") var voteAverage: Double? = null,
-    @SerializedName("vote_count") var voteCount: Int? = null
+    @SerializedName("vote_count") var voteCount: Int? = null,
+    @Ignore
+    var genreNames: List<String> = arrayListOf()
 )
 
-@Entity
 data class Dates(
     @SerializedName("maximum") var maximum: String? = null,
     @SerializedName("minimum") var minimum: String? = null
