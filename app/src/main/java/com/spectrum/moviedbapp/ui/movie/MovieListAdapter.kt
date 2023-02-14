@@ -8,16 +8,19 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.spectrum.moviedbapp.R
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.utils.Constants.IMAGE_BASE_PATH
 import com.spectrum.moviedbapp.databinding.ItemMovieBinding
 import com.spectrum.moviedbapp.databinding.ItemProgressBinding
+import com.spectrum.moviedbapp.ui.moviedetail.MovieDetailFragment
 import com.squareup.picasso.Picasso
 
 
-class MovieListAdapter(private val mList: ArrayList<Results>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MovieListAdapter(private val mList: ArrayList<Results>,
+					   val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	 val VIEW_TYPE_ITEM_ROW = 1
 	 val VIEW_TYPE_ITEM_LOADING = 2
@@ -53,6 +56,10 @@ class MovieListAdapter(private val mList: ArrayList<Results>) : RecyclerView.Ada
 				.load(url)
 				.fit()
 				.into(holder.imageViewPoster)
+
+			holder.itemView.setOnClickListener {
+				onItemClickListener.onItemClicked(model)
+			}
 		}
 
 	}
@@ -78,4 +85,8 @@ class MovieListAdapter(private val mList: ArrayList<Results>) : RecyclerView.Ada
 	class ItemProgressHolder(view: View) : RecyclerView.ViewHolder(view) {
 		val progressBar: ProgressBar = itemView.findViewById(R.id.progressBarItem)
 	}
+}
+
+interface OnItemClickListener{
+	fun onItemClicked(results: Results)
 }

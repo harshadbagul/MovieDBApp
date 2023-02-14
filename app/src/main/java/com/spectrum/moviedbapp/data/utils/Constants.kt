@@ -7,5 +7,16 @@ object Constants {
 
     const val SPLASH = "/"
     const val QUERY_PARAM_BASE = "base"
+    const val MOVIE_QUERY_PARAM = "movie-id"
+
+    const val PARENT = 0
+    const val CHILD = 1
+
+    const val FAVOURITE = 1
+    const val NOT_FAVOURITE = 2
+
+    public enum class MovieListType {
+        NOW_PLAYING, POPULAR, TOP_RATED, UPCOMING
+    }
 
 }

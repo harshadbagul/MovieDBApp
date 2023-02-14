@@ -12,9 +12,18 @@ interface MovieDao {
 
     @Query("SELECT * FROM Genres")
     suspend fun getAllGenres(): List<Genres>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMovie(result: Results)
+
+    @Delete
+    suspend fun deleteMovie(result: Results)
+
+    @Query("SELECT * FROM Results")
+    suspend fun getAllFavouriteMovies(): List<Results>
 }
 
-@Database(entities = [Genres::class], version = 1, exportSchema = false)
+@Database(entities = [Genres::class, Results::class], version = 1, exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
     abstract val movieDao: MovieDao
 }

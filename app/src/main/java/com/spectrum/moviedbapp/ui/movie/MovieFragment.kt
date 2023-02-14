@@ -10,15 +10,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.spectrum.moviedbapp.R
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.network.service.MovieState
+import com.spectrum.moviedbapp.data.utils.Constants
 import com.spectrum.moviedbapp.databinding.FragmentMovieBinding
+import com.spectrum.moviedbapp.ui.moviedetail.MovieDetailFragment
 import com.spectrum.moviedbapp.ui.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MovieFragment : Fragment() {
+class MovieFragment(private val movieType: String) : Fragment(), OnItemClickListener {
 
     private lateinit var binding: FragmentMovieBinding
     private lateinit var mMovieListAdapter: MovieListAdapter
@@ -59,7 +62,12 @@ class MovieFragment : Fragment() {
 
     private fun loadMovieList(){
         lifecycleScope.launchWhenStarted {
-            viewModel.fetchNowPlaying(page)
+            when(movieType){
+                Constants.MovieListType.NOW_PLAYING.toString() -> {  viewModel.fetchNowPlaying(page) }
+                Constants.MovieListType.POPULAR.toString() -> {  viewModel.fetchPopular(page) }
+                Constants.MovieListType.TOP_RATED.toString() -> {  viewModel.fetchTopRated(page) }
+                Constants.MovieListType.UPCOMING.toString() -> {  viewModel.fetchUpcoming(page) }
+            }
         }
     }
 
@@ -67,27 +75,93 @@ class MovieFragment : Fragment() {
         super.onResume()
 
         lifecycleScope.launchWhenStarted {
-            viewModel.nowPlayingStateFlow
-                .collect {
-                    when (it) {
-                        is MovieState.Loading -> {
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-                        is MovieState.Success -> {
-                            binding.progressBar.visibility = View.GONE
-                            val results = viewModel.mapGenresToMovie(it.response.results)
-                            mList.addAll(results)
-                            println("results size : ${mList.size}")
-                            println("page : ${page}")
-                            updateAdapter()
-                        }
-                        is MovieState.Error -> {
-                            binding.progressBar.visibility = View.GONE
-                        }
+            when(movieType){
+                Constants.MovieListType.NOW_PLAYING.toString() -> {  collectNowPlayingFlow() }
+                Constants.MovieListType.POPULAR.toString() -> {  collectPopularFlow() }
+                Constants.MovieListType.TOP_RATED.toString() -> {  collectTopRatedFlow() }
+                Constants.MovieListType.UPCOMING.toString() -> {  collectUpcomingFlow() }
+            }
+        }
+    }
+
+    private suspend fun collectNowPlayingFlow() {
+        viewModel.nowPlayingStateFlow
+            .collect {
+                when (it) {
+                    is MovieState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MovieState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val results = viewModel.mapGenresToMovie(it.response.results)
+                        mList.addAll(results)
+                        updateAdapter()
+                    }
+                    is MovieState.Error -> {
+                        binding.progressBar.visibility = View.GONE
                     }
                 }
-        }
+            }
+    }
 
+    private suspend fun collectPopularFlow() {
+        viewModel.popularStateFlow
+            .collect {
+                when (it) {
+                    is MovieState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MovieState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val results = viewModel.mapGenresToMovie(it.response.results)
+                        mList.addAll(results)
+                        updateAdapter()
+                    }
+                    is MovieState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
+    }
+
+    private suspend fun collectTopRatedFlow() {
+        viewModel.topRatedStateFlow
+            .collect {
+                when (it) {
+                    is MovieState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MovieState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val results = viewModel.mapGenresToMovie(it.response.results)
+                        mList.addAll(results)
+                        updateAdapter()
+                    }
+                    is MovieState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
+    }
+
+    private suspend fun collectUpcomingFlow() {
+        viewModel.upcomingStateFlow
+            .collect {
+                when (it) {
+                    is MovieState.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is MovieState.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        val results = viewModel.mapGenresToMovie(it.response.results)
+                        mList.addAll(results)
+                        updateAdapter()
+                    }
+                    is MovieState.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+            }
     }
 
     private fun addNullItemEnd(){
@@ -122,9 +196,24 @@ class MovieFragment : Fragment() {
         })
     }
 
+    override fun onItemClicked(results: Results) {
+        print("Item Clicked")
+
+        val args = Bundle()
+        args.putString("movieId", results.id.toString())
+        val fragment = MovieDetailFragment()
+        fragment.arguments = args
+
+        val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.container, fragment).addToBackStack("MovieDetailFragment")
+        fragmentTransaction.commit()
+
+        //Navigation.findNavController(binding.root).navigate(MovieFragmentDirections.actionMovieFragmentToMovieDetailsFragment());
+       // findNavController().navigate(R.id.action_movieFragment_to_movieDetailsFragment)
+    }
 
     private fun updateAdapter() {
-        mMovieListAdapter = MovieListAdapter(mList)
+        mMovieListAdapter = MovieListAdapter(mList, this)
         binding.recyclerviewMovie.adapter = mMovieListAdapter
         linearLayoutManager.scrollToPosition(mList.size - itemSize)
     }

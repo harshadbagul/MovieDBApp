@@ -1,5 +1,6 @@
 package com.spectrum.moviedbapp.data.network.model
 
+import android.os.Parcel
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -12,7 +13,8 @@ data class MovieResponse(
     @SerializedName("results") var results: ArrayList<Results> = arrayListOf(),
     @SerializedName("total_pages") var totalPages: Int? = null,
     @SerializedName("total_results") var totalResults: Int? = null,
-    @SerializedName("genres") var genres: List<Genres>? = null
+    @SerializedName("genres") var genres: List<Genres>? = null,
+    val movieDetail: Results? = null
 )
 
 @Entity
@@ -22,6 +24,7 @@ data class Genres(
     @SerializedName("name") var name: String? = null
 )
 
+@Entity
 data class Results(
     @PrimaryKey
     @SerializedName("id") var id: Int? = null,
@@ -42,7 +45,19 @@ data class Results(
     @SerializedName("vote_average") var voteAverage: Double? = null,
     @SerializedName("vote_count") var voteCount: Int? = null,
     @Ignore
+    @SerializedName("genres") var genres: List<Genres>? = null,
+    @SerializedName("status") var status: String? = null,
+    @SerializedName("tagline") var tagline: String? = null,
+    @Ignore
+    @SerializedName("spoken_languages") val spokenLanguages: List<SpokenLanguages>? = null,
+    @Ignore
     var genreNames: List<String> = arrayListOf()
+)
+
+data class SpokenLanguages(
+    @SerializedName("english_name") var english_name: String? = null,
+    @SerializedName("iso_639_1") var iso: String? = null,
+    @SerializedName("name") var name: String? = null
 )
 
 data class Dates(

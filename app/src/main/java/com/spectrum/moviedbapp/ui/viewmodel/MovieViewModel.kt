@@ -6,6 +6,7 @@ import com.spectrum.moviedbapp.data.database.MovieDatabase
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.network.service.MovieState
 import com.spectrum.moviedbapp.data.repository.MovieRepository
+import com.spectrum.moviedbapp.data.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -25,12 +26,61 @@ class MovieViewModel @Inject constructor(
     val nowPlayingStateFlow: StateFlow<MovieState>
         get() = _nowPlayingStateFlow
 
+    private val _popularStateFlow = MutableStateFlow<MovieState>(MovieState.Loading)
+    val popularStateFlow: StateFlow<MovieState>
+        get() = _popularStateFlow
+
+    private val _topRatedStateFlow = MutableStateFlow<MovieState>(MovieState.Loading)
+    val topRatedStateFlow: StateFlow<MovieState>
+        get() = _topRatedStateFlow
+
+    private val _upcomingStateFlow = MutableStateFlow<MovieState>(MovieState.Loading)
+    val upcomingStateFlow: StateFlow<MovieState>
+        get() = _upcomingStateFlow
+
+    private val _movieDetailStateFlow = MutableStateFlow<MovieState>(MovieState.Loading)
+    val movieDetailStateFlow: StateFlow<MovieState>
+        get() = _movieDetailStateFlow
+
 
     suspend fun fetchNowPlaying(page: Int) {
-        movieRepository.fetchNowPlaying(page).flowOn(Dispatchers.IO)
-            .onStart { emit(MovieState.Loading) }.onEach { _nowPlayingStateFlow.value = it }
+        movieRepository.fetchMovies(page, Constants.MovieListType.NOW_PLAYING)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _nowPlayingStateFlow.value = it }
             .launchIn(viewModelScope)
+    }
 
+    suspend fun fetchPopular(page: Int) {
+        movieRepository.fetchMovies(page, Constants.MovieListType.POPULAR)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _popularStateFlow.value = it }
+            .launchIn(viewModelScope)
+    }
+
+    suspend fun fetchTopRated(page: Int) {
+        movieRepository.fetchMovies(page, Constants.MovieListType.TOP_RATED)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _topRatedStateFlow.value = it }
+            .launchIn(viewModelScope)
+    }
+
+    suspend fun fetchUpcoming(page: Int) {
+        movieRepository.fetchMovies(page, Constants.MovieListType.UPCOMING)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _upcomingStateFlow.value = it }
+            .launchIn(viewModelScope)
+    }
+
+    suspend fun fetchMovieDetail(movieId: String) {
+        movieRepository.fetchMovieDetail(movieId)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _movieDetailStateFlow.value = it }
+            .launchIn(viewModelScope)
     }
 
     suspend fun mapGenresToMovie(results: ArrayList<Results>): ArrayList<Results> {
@@ -51,6 +101,22 @@ class MovieViewModel @Inject constructor(
 
     suspend fun fetchGenres() {
         movieRepository.getGenres()
+    }
+
+
+    suspend fun addToMovieToFavourite(result: Results?){
+        result?.let { movieDatabase.movieDao.insertMovie(it) }
+    }
+
+    suspend fun removeMovieFromFavourite(result: Results?){
+        result?.let { movieDatabase.movieDao.deleteMovie(it) }
+    }
+
+    suspend fun isMovieFavourite(movieId: String): Boolean {
+       val allFavouriteMovies = movieDatabase.movieDao.getAllFavouriteMovies()
+       val isMovieFavourite = allFavouriteMovies.any { it.id.toString() == movieId }
+
+       return isMovieFavourite
     }
 
 }
