@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.spectrum.moviedbapp.R
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.network.service.MovieState
 import com.spectrum.moviedbapp.data.utils.Constants
+import com.spectrum.moviedbapp.data.utils.Utils.addFragment
+import com.spectrum.moviedbapp.data.utils.Utils.launchMovieDetailFragment
+import com.spectrum.moviedbapp.data.utils.Utils.loadMoreItems
 import com.spectrum.moviedbapp.databinding.FragmentMovieBinding
 import com.spectrum.moviedbapp.ui.moviedetail.MovieDetailFragment
 import com.spectrum.moviedbapp.ui.viewmodel.MovieViewModel
@@ -26,16 +26,11 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
     private lateinit var binding: FragmentMovieBinding
     private lateinit var mMovieListAdapter: MovieListAdapter
     var mList : ArrayList<Results> = arrayListOf()
-
-    private val viewModel by activityViewModels<MovieViewModel>()
-
-    var isScrolling = false
-    var currentItems = 0
-    var totalItems:Int = 0
     var scrollOutItems:Int = 0
-    val itemSize = 20
     lateinit var linearLayoutManager: LinearLayoutManager
     var page = 1
+
+    private val viewModel by activityViewModels<MovieViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,19 +43,27 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLayoutManager()
 
-        initScrollListener()
+        //load more if last item visible in window
+        binding.recyclerviewMovie.loadMoreItems(
+            linearLayoutManager
+        ) {
+            page++
+            scrollOutItems = it
+            loadMovieList()
+        }
 
+        //call Genres & movie list for selected tab
         lifecycleScope.launchWhenStarted {
             viewModel.fetchGenres()
             loadMovieList()
         }
 
-        linearLayoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerviewMovie.layoutManager = linearLayoutManager
     }
 
     private fun loadMovieList(){
+        // call api for selected tab
         lifecycleScope.launchWhenStarted {
             when(movieType){
                 Constants.MovieListType.NOW_PLAYING.toString() -> {  viewModel.fetchNowPlaying(page) }
@@ -73,7 +76,6 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
 
     override fun onResume() {
         super.onResume()
-
         lifecycleScope.launchWhenStarted {
             when(movieType){
                 Constants.MovieListType.NOW_PLAYING.toString() -> {  collectNowPlayingFlow() }
@@ -84,6 +86,9 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
         }
     }
 
+    /**
+     *  flow too collect emitted result for NowPlaying
+     */
     private suspend fun collectNowPlayingFlow() {
         viewModel.nowPlayingStateFlow
             .collect {
@@ -104,6 +109,9 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
             }
     }
 
+    /**
+     *  flow too collect emitted result for Popular
+     */
     private suspend fun collectPopularFlow() {
         viewModel.popularStateFlow
             .collect {
@@ -124,6 +132,9 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
             }
     }
 
+    /**
+     *  flow too collect emitted result for TopRated
+     */
     private suspend fun collectTopRatedFlow() {
         viewModel.topRatedStateFlow
             .collect {
@@ -144,6 +155,9 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
             }
     }
 
+    /**
+     *  flow too collect emitted result for Upcoming
+     */
     private suspend fun collectUpcomingFlow() {
         viewModel.upcomingStateFlow
             .collect {
@@ -164,58 +178,31 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
             }
     }
 
-    private fun addNullItemEnd(){
-        //Remove previous null element if any
-        mList = mList.filterNot { it.id == null } as ArrayList<Results>
-        // adding null element to handle load more feature
-        mList.add(Results(id = null))
-    }
-
-
-    private fun initScrollListener() {
-        binding.recyclerviewMovie.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
-                    isScrolling = true
-                }
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                currentItems = linearLayoutManager.childCount
-                totalItems = linearLayoutManager.itemCount
-                scrollOutItems = linearLayoutManager.findFirstVisibleItemPosition()
-
-                if(isScrolling && (currentItems + scrollOutItems == totalItems)) {
-                    isScrolling = false
-                    page++
-                    loadMovieList()
-                }
-            }
-        })
-    }
-
+    /**
+     *  movie item click listener event
+     */
     override fun onItemClicked(results: Results) {
-        print("Item Clicked")
-
-        val args = Bundle()
-        args.putString("movieId", results.id.toString())
-        val fragment = MovieDetailFragment()
-        fragment.arguments = args
-
-        val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.container, fragment).addToBackStack("MovieDetailFragment")
-        fragmentTransaction.commit()
-
-        //Navigation.findNavController(binding.root).navigate(MovieFragmentDirections.actionMovieFragmentToMovieDetailsFragment());
-       // findNavController().navigate(R.id.action_movieFragment_to_movieDetailsFragment)
+        results.id?.let { movieId ->
+            requireActivity().launchMovieDetailFragment(movieId.toString())
+        }
     }
 
+
+    /**
+     * set adapter with list data
+     */
     private fun updateAdapter() {
         mMovieListAdapter = MovieListAdapter(mList, this)
         binding.recyclerviewMovie.adapter = mMovieListAdapter
-        linearLayoutManager.scrollToPosition(mList.size - itemSize)
+        linearLayoutManager.scrollToPosition(scrollOutItems)
+    }
+
+    /**
+     * init layout manager
+     */
+    private fun setLayoutManager() {
+        linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerviewMovie.layoutManager = linearLayoutManager
     }
 
 }

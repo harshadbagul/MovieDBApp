@@ -1,6 +1,7 @@
 package com.spectrum.moviedbapp.ui.moviedetail
 
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,8 +17,10 @@ import com.spectrum.moviedbapp.data.network.model.MovieDetail
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.network.service.MovieState
 import com.spectrum.moviedbapp.data.utils.Constants
+import com.spectrum.moviedbapp.data.utils.Constants.ARG_MOVIE_ID
 import com.spectrum.moviedbapp.data.utils.Constants.FAVOURITE
 import com.spectrum.moviedbapp.data.utils.Constants.NOT_FAVOURITE
+import com.spectrum.moviedbapp.data.utils.Utils
 import com.spectrum.moviedbapp.databinding.FragmentMovieDetailBinding
 import com.spectrum.moviedbapp.ui.viewmodel.MovieViewModel
 import com.squareup.picasso.Picasso
@@ -43,8 +46,9 @@ class MovieDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).setToolbar(false)
-        movieId = arguments?.getString("movieId") ?: ""
+        movieId = arguments?.getString(ARG_MOVIE_ID) ?: ""
 
+        // fetch moive details using movieId
         lifecycleScope.launchWhenStarted {
             viewModel.fetchMovieDetail(movieId)
         }
@@ -69,8 +73,8 @@ class MovieDetailFragment : Fragment() {
         }
 
 
+        //set fav image
         lifecycleScope.launchWhenStarted {
-            //set fav image
             if (viewModel.isMovieFavourite(movieId)){
                 binding.fabFav.tag = FAVOURITE
                 binding.fabFav.setImageResource(R.drawable.ic_heart_red)
@@ -84,20 +88,27 @@ class MovieDetailFragment : Fragment() {
 
         binding.fabFav.setOnClickListener {
             lifecycleScope.launchWhenStarted {
-                if (binding.fabFav.tag == FAVOURITE){
-                    binding.fabFav.tag = NOT_FAVOURITE
-                    viewModel.removeMovieFromFavourite(result)
-                    binding.fabFav.setImageResource(R.drawable.ic_heart)
-                    setColorTint(NOT_FAVOURITE)
-                }else{
-                    binding.fabFav.tag = FAVOURITE
-                    viewModel.addToMovieToFavourite(result)
-                    binding.fabFav.setImageResource(R.drawable.ic_heart_red)
-                    setColorTint(FAVOURITE)
-                }
+                toggleFavourite()
             }
         }
 
+    }
+
+    /**
+     * set movie icon, tint color
+     */
+    private suspend fun toggleFavourite() {
+        if (binding.fabFav.tag == FAVOURITE) {
+            binding.fabFav.tag = NOT_FAVOURITE
+            viewModel.removeMovieFromFavourite(result)
+            binding.fabFav.setImageResource(R.drawable.ic_heart)
+            setColorTint(NOT_FAVOURITE)
+        } else {
+            binding.fabFav.tag = FAVOURITE
+            viewModel.addToMovieToFavourite(result)
+            binding.fabFav.setImageResource(R.drawable.ic_heart_red)
+            setColorTint(FAVOURITE)
+        }
     }
 
     private fun setColorTint(fav: Int){
@@ -105,12 +116,14 @@ class MovieDetailFragment : Fragment() {
             val red = ContextCompat.getColor(requireContext(), R.color.red)
             binding.fabFav.imageTintList = ColorStateList.valueOf(red)
         }else{
-            val white = ContextCompat.getColor(requireContext(), R.color.white)
-            binding.fabFav.imageTintList = ColorStateList.valueOf(white)
+            val black = ContextCompat.getColor(requireContext(), R.color.black)
+            binding.fabFav.imageTintList = ColorStateList.valueOf(black)
         }
     }
 
-
+    /**
+     * set all movie details
+     */
     private fun setMovieDetails(movieDetail: Results?) {
         //set poster image
         val url = Constants.IMAGE_BASE_PATH.plus(movieDetail?.backdropPath)
@@ -173,6 +186,14 @@ class MovieDetailFragment : Fragment() {
         movieDetail5.parentTitle = getString(R.string.status)
         movieDetail5.data = movieDetail?.status ?: ""
         listData.add(movieDetail5)
+
+        //release date
+        val movieDetail10 = MovieDetail()
+        movieDetail10.parentTitle = getString(R.string.released_on)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            movieDetail10.data = Utils.getDate(movieDetail?.releaseDate ?: "")
+        }
+        listData.add(movieDetail10)
 
         //overview
         val movieDetail7 = MovieDetail()

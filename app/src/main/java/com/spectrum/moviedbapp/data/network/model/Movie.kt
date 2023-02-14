@@ -1,11 +1,9 @@
 package com.spectrum.moviedbapp.data.network.model
 
-import android.os.Parcel
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-
 
 data class MovieResponse(
     @SerializedName("dates") var dates: Dates? = Dates(),
@@ -19,21 +17,16 @@ data class MovieResponse(
 
 @Entity
 data class Genres(
-    @PrimaryKey
-    @SerializedName("id") var id: Int? = null,
+    @PrimaryKey @SerializedName("id") var id: Int? = null,
     @SerializedName("name") var name: String? = null
 )
 
 @Entity
 data class Results(
-    @PrimaryKey
-    @SerializedName("id") var id: Int? = null,
-
+    @PrimaryKey @SerializedName("id") var id: Int? = null,
     @SerializedName("adult") var adult: Boolean? = null,
     @SerializedName("backdrop_path") var backdropPath: String? = null,
-
-    @Ignore
-    @SerializedName("genre_ids") var genreIds: ArrayList<Int> = arrayListOf(),
+    @Ignore @SerializedName("genre_ids") var genreIds: ArrayList<Int> = arrayListOf(),
     @SerializedName("original_language") var originalLanguage: String? = null,
     @SerializedName("original_title") var originalTitle: String? = null,
     @SerializedName("overview") var overview: String? = null,
@@ -44,14 +37,11 @@ data class Results(
     @SerializedName("video") var video: Boolean? = null,
     @SerializedName("vote_average") var voteAverage: Double? = null,
     @SerializedName("vote_count") var voteCount: Int? = null,
-    @Ignore
-    @SerializedName("genres") var genres: List<Genres>? = null,
+    @Ignore @SerializedName("genres") var genres: List<Genres>? = null,
     @SerializedName("status") var status: String? = null,
     @SerializedName("tagline") var tagline: String? = null,
-    @Ignore
-    @SerializedName("spoken_languages") val spokenLanguages: List<SpokenLanguages>? = null,
-    @Ignore
-    var genreNames: List<String> = arrayListOf()
+    @Ignore @SerializedName("spoken_languages") val spokenLanguages: List<SpokenLanguages>? = null,
+    @Ignore var genreNames: List<String> = arrayListOf(),
 )
 
 data class SpokenLanguages(

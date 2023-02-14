@@ -42,6 +42,10 @@ class MovieViewModel @Inject constructor(
     val movieDetailStateFlow: StateFlow<MovieState>
         get() = _movieDetailStateFlow
 
+    private val _searchResultStateFlow = MutableStateFlow<MovieState>(MovieState.Loading)
+    val searchResultStateFlow: StateFlow<MovieState>
+        get() = _searchResultStateFlow
+
 
     suspend fun fetchNowPlaying(page: Int) {
         movieRepository.fetchMovies(page, Constants.MovieListType.NOW_PLAYING)
@@ -83,8 +87,17 @@ class MovieViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    suspend fun fetchQueryResult(query: String) {
+        movieRepository.fetchQueryResults(query)
+            .flowOn(Dispatchers.IO)
+            .onStart { emit(MovieState.Loading) }
+            .onEach { _searchResultStateFlow.value = it }
+            .launchIn(viewModelScope)
+    }
+
+
     suspend fun mapGenresToMovie(results: ArrayList<Results>): ArrayList<Results> {
-        var newResults: ArrayList<Results> = arrayListOf()
+        val newResults: ArrayList<Results> = arrayListOf()
 
         val allGenres = movieDatabase.movieDao.getAllGenres()
         results.forEachIndexed { index, result ->
@@ -117,6 +130,10 @@ class MovieViewModel @Inject constructor(
        val isMovieFavourite = allFavouriteMovies.any { it.id.toString() == movieId }
 
        return isMovieFavourite
+    }
+
+    suspend fun getAllFavouriteMovies(): List<Results> {
+        return movieDatabase.movieDao.getAllFavouriteMovies()
     }
 
 }
