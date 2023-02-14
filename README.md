@@ -39,7 +39,6 @@ For this project I have used:
 * [Room](https://developer.android.com/topic/libraries/architecture/room.html)
 * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel.html)
 * [LiveData](https://developer.android.com/topic/libraries/architecture/livedata.html)
-* [MPChart](https://github.com/PhilJay/MPAndroidChart)
 * [DaggerHilt](https://dagger.dev/hilt/)
 * [JUnit](https://developer.android.com/training/testing/local-tests)
 * [Picasso](https://github.com/square/picasso)
