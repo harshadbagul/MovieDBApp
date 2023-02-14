@@ -20,7 +20,7 @@
             android:id="@+id/imageview_poster"
             android:layout_width="0dp"
             android:layout_height="@dimen/poster_height"
-            android:src="@drawable/fan"
+            android:src="@drawable/ic_launcher_foreground"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"

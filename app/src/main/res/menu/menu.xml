@@ -6,7 +6,7 @@
         android:id="@+id/action_favourite"
         android:title="@string/favourite"
         android:iconTint="@color/white"
-        android:icon="@drawable/ic_heart_icon_svg"
+        android:icon="@drawable/ic_favorite"
         app:showAsAction="ifRoom|withText" />
 
     <!-- Search view widget as item in menu -->

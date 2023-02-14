@@ -54,7 +54,7 @@ class MovieFragment(private val movieType: String) : Fragment(), OnItemClickList
             loadMovieList()
         }
 
-        //call Genres & movie list for selected tab
+        // call Genres & and movie list based on tab selection
         lifecycleScope.launchWhenStarted {
             viewModel.fetchGenres()
             loadMovieList()

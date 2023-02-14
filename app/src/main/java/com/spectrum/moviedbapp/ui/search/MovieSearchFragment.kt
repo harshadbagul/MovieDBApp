@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.spectrum.moviedbapp.R
 import com.spectrum.moviedbapp.data.network.model.Results
 import com.spectrum.moviedbapp.data.network.service.MovieState
 import com.spectrum.moviedbapp.data.utils.Constants
@@ -41,8 +43,10 @@ class MovieSearchFragment: Fragment(), OnItemClickListener {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setToolbar()
 
         lifecycleScope.launchWhenStarted {
             viewModel.searchResultStateFlow
@@ -78,5 +82,17 @@ class MovieSearchFragment: Fragment(), OnItemClickListener {
         results.id?.let { movieId ->
             requireActivity().launchMovieDetailFragment(movieId.toString())
         }
+    }
+
+    private fun setToolbar() {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_back)
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    @MainThread
+    fun onBackPressed() {
+        activity?.onBackPressedDispatcher?.onBackPressed()
     }
 }

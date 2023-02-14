@@ -2,6 +2,7 @@ package com.spectrum.moviedbapp.ui.favourite
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,7 +30,6 @@ class MovieFavouriteListFragment : Fragment(), OnItemClickListener {
     ): View {
         binding = FragmentMovieFavouriteBinding.inflate(inflater, container, false)
 
-
         lifecycleScope.launchWhenStarted {
             favouriteMovies = viewModel.getAllFavouriteMovies()
             setAdapter()
@@ -38,6 +38,10 @@ class MovieFavouriteListFragment : Fragment(), OnItemClickListener {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setToolbar()
+    }
 
     private fun setAdapter() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
@@ -57,4 +61,15 @@ class MovieFavouriteListFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    private fun setToolbar() {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_back)
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    @MainThread
+    fun onBackPressed() {
+        activity?.onBackPressedDispatcher?.onBackPressed()
+    }
 }
