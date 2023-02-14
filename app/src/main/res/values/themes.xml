@@ -10,22 +10,13 @@
     <style name="Theme.MovieDbApp.Actionbar" parent="Theme.MaterialComponents.Light.NoActionBar" >
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">11sp</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
     </style>
 
     <style name="Theme.MovieDbApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.MovieDbApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView.ActionBar">
-        <!-- Gets rid of the search icon -->
-        <item name="searchIcon">@drawable/ic_search_icon_svg</item>
-        <!-- Gets rid of the "underline" in the text -->
-        <item name="queryBackground">@color/white</item>
-        <!-- Gets rid of the search icon when the SearchView is expanded -->
-        <item name="searchHintIcon">@null</item>
-        <!-- The hint text that appears when the user has not typed anything -->
-        <item name="queryHint">@string/search</item>
+    <style name="TextAppearance.Widget.TabWidget" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">false</item>
     </style>
 
 </resources>
